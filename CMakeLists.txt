@@ -607,6 +607,12 @@ if(NOT CMAKE_SKIP_INSTALL_RULES)
     EXPORT
       sleighTargets
 
+    RUNTIME #
+    COMPONENT sleigh_Runtime
+
+    ARCHIVE #
+    COMPONENT sleigh_Development
+
     INCLUDES DESTINATION
       ${CMAKE_INSTALL_INCLUDEDIR}
   )
@@ -617,6 +623,8 @@ if(NOT CMAKE_SKIP_INSTALL_RULES)
 
     DESTINATION
     ${CMAKE_INSTALL_INCLUDEDIR}/sleigh
+
+    COMPONENT sleigh_Development
   )
 
   # Install the compiled sla files found in 'Ghidra' top-level directory
@@ -626,6 +634,8 @@ if(NOT CMAKE_SKIP_INSTALL_RULES)
 
     DESTINATION
       "${CMAKE_INSTALL_DATADIR}/sleigh"
+
+    COMPONENT sleigh_Development
   )
 
   set(CMAKE_INSTALL_DOCDIR "${CMAKE_INSTALL_DATAROOTDIR}/doc/sleigh")
@@ -637,6 +647,7 @@ if(NOT CMAKE_SKIP_INSTALL_RULES)
         COMMAND \"${CMAKE_COMMAND}\" --build \"${CMAKE_BINARY_DIR}\" --target sleigh_documentation
         COMMAND_ECHO STDOUT
       )"
+      COMPONENT sleigh_Docs
     )
     install(
       DIRECTORY
@@ -644,6 +655,8 @@ if(NOT CMAKE_SKIP_INSTALL_RULES)
 
       DESTINATION
         "${CMAKE_INSTALL_DOCDIR}"
+
+      COMPONENT sleigh_Docs
     )
   endif(SLEIGH_ENABLE_DOCUMENTATION)
 
@@ -703,6 +716,8 @@ if(NOT CMAKE_SKIP_INSTALL_RULES)
           OWNER_READ OWNER_WRITE OWNER_EXECUTE
           GROUP_READ GROUP_EXECUTE
           WORLD_READ WORLD_EXECUTE
+
+        COMPONENT sleigh_Development
       )
     endforeach()
   endif()
@@ -717,6 +732,7 @@ if(NOT CMAKE_SKIP_INSTALL_RULES)
     EXPORT sleighTargets
     NAMESPACE sleigh::
     DESTINATION "${sleigh_INSTALL_CMAKEDIR}"
+    COMPONENT sleigh_Development
   )
 
   # Specfiles installation setup
@@ -744,11 +760,13 @@ if(NOT CMAKE_SKIP_INSTALL_RULES)
     FILES ${PROJECT_BINARY_DIR}/install-config.cmake
     RENAME sleighConfig.cmake
     DESTINATION "${sleigh_INSTALL_CMAKEDIR}"
+    COMPONENT sleigh_Development
   )
 
   install(
     FILES cmake/modules/sleighCompile.cmake
     DESTINATION "${sleigh_INSTALL_CMAKEDIR}/modules"
+    COMPONENT sleigh_Development
   )
 endif()
 
