@@ -12,6 +12,10 @@ cmake_minimum_required(VERSION 3.15)
 # Sets "ghidra_version" for numeric version number
 # Use "ghidrasource_SOURCE_DIR" variable for Ghidra repo root
 include(src/setup-ghidra-source.cmake)
+set(sleigh_RELEASE_IS_HEAD FALSE)
+if("${sleigh_RELEASE_TYPE}" STREQUAL "HEAD")
+  set(sleigh_RELEASE_IS_HEAD TRUE)
+endif()
 
 project("sleigh"
   VERSION "${ghidra_version}"
@@ -32,41 +36,122 @@ if(sleigh_ENABLE_PACKAGING)
 endif()
 
 set(public_include_header_list
-  "${PROJECT_SOURCE_DIR}/include/libsleigh.hh"
   "${PROJECT_SOURCE_DIR}/support/Support.h"
   "${PROJECT_SOURCE_DIR}/support/Version.h"
+  "${library_root}/action.hh"
   "${library_root}/address.hh"
+  "${library_root}/architecture.hh"
+  "${library_root}/bfd_arch.hh"
+  "${library_root}/block.hh"
+  "${library_root}/blockaction.hh"
+  "${library_root}/callgraph.hh"
+  "${library_root}/capability.hh"
+  "${library_root}/cast.hh"
+  "${library_root}/codedata.hh"
+  "${library_root}/comment.hh"
+  "${library_root}/comment_ghidra.hh"
+  "${library_root}/condexe.hh"
   "${library_root}/context.hh"
+  "${library_root}/coreaction.hh"
+  "${library_root}/cover.hh"
+  "${library_root}/cpool.hh"
+  "${library_root}/cpool_ghidra.hh"
+  "${library_root}/crc32.hh"
+  "${library_root}/database.hh"
+  "${library_root}/database_ghidra.hh"
+  "${library_root}/doccore.hh"
+  "${library_root}/docmain.hh"
+  "${library_root}/double.hh"
+  "${library_root}/dynamic.hh"
   "${library_root}/emulate.hh"
+  "${library_root}/emulateutil.hh"
   "${library_root}/error.hh"
+  "${library_root}/filemanage.hh"
   "${library_root}/float.hh"
+  "${library_root}/flow.hh"
+  "${library_root}/fspec.hh"
+  "${library_root}/funcdata.hh"
+  "${library_root}/ghidra_arch.hh"
+  "${library_root}/ghidra_context.hh"
+  "${library_root}/ghidra_process.hh"
+  "${library_root}/ghidra_translate.hh"
   "${library_root}/globalcontext.hh"
+  "${library_root}/grammar.hh"
+  "${library_root}/graph.hh"
+  "${library_root}/heritage.hh"
+  "${library_root}/ifacedecomp.hh"
+  "${library_root}/ifaceterm.hh"
+  "${library_root}/inject_ghidra.hh"
+  "${library_root}/inject_sleigh.hh"
+  "${library_root}/interface.hh"
+  "${library_root}/jumptable.hh"
+  "${library_root}/libdecomp.hh"
   "${library_root}/loadimage.hh"
+  "${library_root}/loadimage_bfd.hh"
+  "${library_root}/loadimage_ghidra.hh"
+  "${library_root}/loadimage_xml.hh"
   "${library_root}/memstate.hh"
+  "${library_root}/merge.hh"
+  "${library_root}/op.hh"
   "${library_root}/opbehavior.hh"
   "${library_root}/opcodes.hh"
+  "${library_root}/options.hh"
+  "${library_root}/override.hh"
+  "${library_root}/paramid.hh"
   "${library_root}/partmap.hh"
+  "${library_root}/pcodecompile.hh"
+  "${library_root}/pcodeinject.hh"
+  "${library_root}/pcodeparse.hh"
   "${library_root}/pcoderaw.hh"
+  "${library_root}/prefersplit.hh"
+  "${library_root}/prettyprint.hh"
+  "${library_root}/printc.hh"
+  "${library_root}/printjava.hh"
+  "${library_root}/printlanguage.hh"
+  "${library_root}/rangemap.hh"
+  "${library_root}/rangeutil.hh"
+  "${library_root}/raw_arch.hh"
+  "${library_root}/ruleaction.hh"
+  "${library_root}/rulecompile.hh"
   "${library_root}/semantics.hh"
   "${library_root}/sleigh.hh"
+  "${library_root}/sleigh_arch.hh"
   "${library_root}/sleighbase.hh"
+  "${library_root}/slgh_compile.hh"
+  "${library_root}/slghparse.hh"
   "${library_root}/slghpatexpress.hh"
   "${library_root}/slghpattern.hh"
   "${library_root}/slghsymbol.hh"
   "${library_root}/space.hh"
+  "${library_root}/string_ghidra.hh"
+  "${library_root}/stringmanage.hh"
+  "${library_root}/subflow.hh"
+  "${library_root}/testfunction.hh"
+  "${library_root}/transform.hh"
   "${library_root}/translate.hh"
+  "${library_root}/type.hh"
+  "${library_root}/typegrp_ghidra.hh"
+  "${library_root}/typeop.hh"
   "${library_root}/types.h"
+  "${library_root}/unify.hh"
+  "${library_root}/userop.hh"
+  "${library_root}/variable.hh"
+  "${library_root}/varmap.hh"
+  "${library_root}/varnode.hh"
   "${library_root}/xml.hh"
+  "${library_root}/xml_arch.hh"
 )
-if("${sleigh_GHIDRA_RELEASE_TYPE}" STREQUAL "HEAD")
+if(sleigh_RELEASE_IS_HEAD)
   list(APPEND public_include_header_list
     "${library_root}/marshal.hh"
+    "${library_root}/unionresolve.hh"
   )
 endif()
 # Create custom target so that IDEs know these files are part of the sources
 add_custom_target(sleigh_all_headers SOURCES ${public_include_header_list})
 set(public_headers_dir ${CMAKE_CURRENT_BINARY_DIR}/include)
 file(MAKE_DIRECTORY "${public_headers_dir}/sleigh")
+configure_file(cmake/libconfig.h.in include/sleigh/libconfig.h)
 # Copy the public headers into our build directory so that we can control the layout.
 # Ideally, we want to let people '#include <sleigh/{header}>' without installing sleigh
 foreach(public_header ${public_include_header_list})
@@ -83,7 +168,7 @@ set(sleigh_core_source_list
   "${library_root}/opcodes.cc"
   "${library_root}/globalcontext.cc"
 )
-if("${sleigh_GHIDRA_RELEASE_TYPE}" STREQUAL "HEAD")
+if(sleigh_RELEASE_IS_HEAD)
   list(APPEND sleigh_core_source_list
     "${library_root}/marshal.cc"
   )
@@ -143,7 +228,7 @@ set(sleigh_deccore_source_list
   "${library_root}/opbehavior.cc"
   "${library_root}/paramid.cc"
 )
-if("${sleigh_GHIDRA_RELEASE_TYPE}" STREQUAL "HEAD")
+if(sleigh_RELEASE_IS_HEAD)
   list(APPEND sleigh_deccore_source_list
     "${library_root}/unionresolve.cc"
   )
@@ -493,10 +578,10 @@ endif()
 # Spec files
 #
 # Sets 'spec_file_list' variable
-if(NOT "${sleigh_GHIDRA_RELEASE_TYPE}" STREQUAL "HEAD")
-  include(spec-files-list/spec_files_stable.cmake)
-else()
+if(sleigh_RELEASE_IS_HEAD)
   include(spec-files-list/spec_files_HEAD.cmake)
+else()
+  include(spec-files-list/spec_files_stable.cmake)
 endif()
 
 # This prefix should match the Ghidra repo to where the sla spec files are located
@@ -649,11 +734,11 @@ if(NOT CMAKE_SKIP_INSTALL_RULES)
   )
 
   install(
-    FILES
-    ${public_include_header_list}
+    DIRECTORY
+      "${CMAKE_CURRENT_BINARY_DIR}/include/"
 
     DESTINATION
-    ${CMAKE_INSTALL_INCLUDEDIR}/sleigh
+    ${CMAKE_INSTALL_INCLUDEDIR}
   )
 
   # Install the compiled sla files found in 'Ghidra' top-level directory
