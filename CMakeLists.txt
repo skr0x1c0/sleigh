@@ -58,6 +58,11 @@ set(public_include_header_list
   "${library_root}/types.h"
   "${library_root}/xml.hh"
 )
+if("${sleigh_GHIDRA_RELEASE_TYPE}" STREQUAL "HEAD")
+  list(APPEND public_include_header_list
+    "${library_root}/marshal.hh"
+  )
+endif()
 # Create custom target so that IDEs know these files are part of the sources
 add_custom_target(sleigh_all_headers SOURCES ${public_include_header_list})
 set(public_headers_dir ${CMAKE_CURRENT_BINARY_DIR}/include)
@@ -78,6 +83,11 @@ set(sleigh_core_source_list
   "${library_root}/opcodes.cc"
   "${library_root}/globalcontext.cc"
 )
+if("${sleigh_GHIDRA_RELEASE_TYPE}" STREQUAL "HEAD")
+  list(APPEND sleigh_core_source_list
+    "${library_root}/marshal.cc"
+  )
+endif()
 
 set(sleigh_deccore_source_list
   "${library_root}/capability.cc"
